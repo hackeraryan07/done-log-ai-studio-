@@ -2,6 +2,7 @@ package com.example.ui.screens
 
 import android.app.DatePickerDialog
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -24,6 +26,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.example.DateUtils
@@ -209,41 +212,44 @@ fun TodoCard(
     onEditClick: (() -> Unit)?,
     onDelete: () -> Unit
 ) {
-    ElevatedCard(
+    Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.elevatedCardColors(
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
             containerColor = if (todo.completed) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f) else MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = if (todo.completed) 0.dp else 2.dp
-        )
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = if (todo.completed) 0.dp else 1.dp
+        ),
+        border = if (!todo.completed) androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)) else null
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 18.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Interactive Checkbox / Status Marker
-            if (!todo.completed && onCompleteClick != null) {
-                FilledTonalIconButton(
-                    onClick = onCompleteClick,
-                    modifier = Modifier.size(48.dp),
-                    shape = CircleShape,
-                    colors = IconButtonDefaults.filledTonalIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            val isCompleted = todo.completed
+            
+            // Minimalist Custom Checkbox
+            Box(
+                modifier = Modifier
+                    .size(26.dp)
+                    .clip(CircleShape)
+                    .background(if (isCompleted) MaterialTheme.colorScheme.primary else Color.Transparent)
+                    .border(
+                        width = 2.dp,
+                        color = if (isCompleted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                        shape = CircleShape
                     )
-                ) {
-                    Icon(Icons.Default.Check, contentDescription = "Complete")
-                }
-            } else {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Default.Check, contentDescription = "Completed", tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+                    .clickable(enabled = onCompleteClick != null) { onCompleteClick?.invoke() },
+                contentAlignment = Alignment.Center
+            ) {
+                if (isCompleted) {
+                    Icon(
+                        Icons.Default.Check,
+                        contentDescription = "Completed",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(16.dp)
+                    )
                 }
             }
             
@@ -253,9 +259,9 @@ fun TodoCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = todo.text,
-                    style = MaterialTheme.typography.titleMedium,
-                    textDecoration = if (todo.completed) TextDecoration.LineThrough else null,
-                    color = if (todo.completed) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f) else MaterialTheme.colorScheme.onSurface
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium),
+                    textDecoration = if (isCompleted) androidx.compose.ui.text.style.TextDecoration.LineThrough else null,
+                    color = if (isCompleted) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f) else MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -263,27 +269,47 @@ fun TodoCard(
                         Icons.Default.CalendarToday, 
                         contentDescription = null, 
                         modifier = Modifier.size(14.dp), 
-                        tint = if (todo.completed) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f) else MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = if (isCompleted) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
                     )
                     Spacer(Modifier.width(6.dp))
                     Text(
                         text = DateUtils.formatDate(todo.scheduledDate),
                         style = MaterialTheme.typography.labelMedium,
-                        color = if (todo.completed) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f) else MaterialTheme.colorScheme.onSurfaceVariant,
-                        textDecoration = if (todo.completed) TextDecoration.LineThrough else null
+                        color = if (isCompleted) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f) else MaterialTheme.colorScheme.onSurfaceVariant,
+                        textDecoration = if (isCompleted) androidx.compose.ui.text.style.TextDecoration.LineThrough else null
                     )
                 }
             }
             
-            // Actions
-            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                if (onEditClick != null) {
-                    IconButton(onClick = onEditClick, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
+            // Actions Overflow Menu
+            Box {
+                var menuExpanded by remember { mutableStateOf(false) }
+                IconButton(onClick = { menuExpanded = true }, modifier = Modifier.size(36.dp)) {
+                    Icon(Icons.Default.MoreVert, contentDescription = "Options", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
-                    Icon(Icons.Default.Delete, contentDescription = "Delete", modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f))
+                DropdownMenu(
+                    expanded = menuExpanded,
+                    onDismissRequest = { menuExpanded = false },
+                    modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                ) {
+                    if (onEditClick != null) {
+                        DropdownMenuItem(
+                            text = { Text("Edit") },
+                            leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
+                            onClick = {
+                                menuExpanded = false
+                                onEditClick()
+                            }
+                        )
+                    }
+                    DropdownMenuItem(
+                        text = { Text("Delete", color = MaterialTheme.colorScheme.error) },
+                        leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
+                        onClick = {
+                            menuExpanded = false
+                            onDelete()
+                        }
+                    )
                 }
             }
         }
