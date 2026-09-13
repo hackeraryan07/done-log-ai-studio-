@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -20,6 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.ui.screens.AuthScreen
 import com.example.ui.screens.HomeScreen
 import com.example.ui.screens.PinScreen
+import com.example.ui.screens.SettingsScreen
 import com.example.ui.theme.MyApplicationTheme
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -32,7 +34,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MyApplicationTheme {
+            val themeModeState by AppSettings.getThemeMode(this).collectAsStateWithLifecycle(initialValue = ThemeMode.SYSTEM)
+            val isDarkTheme = when (themeModeState) {
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+                ThemeMode.SYSTEM -> isSystemInDarkTheme()
+            }
+            
+            MyApplicationTheme(darkTheme = isDarkTheme) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -99,6 +108,9 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onNavigateTodo = {
                                         navController.navigate("todo")
+                                    },
+                                    onNavigateSettings = {
+                                        navController.navigate("settings")
                                     }
                                 )
                             }
@@ -113,6 +125,13 @@ class MainActivity : ComponentActivity() {
                             composable("todo") {
                                 com.example.ui.screens.TodoScreen(
                                     viewModel = viewModel,
+                                    onNavigateBack = {
+                                        navController.popBackStack()
+                                    }
+                                )
+                            }
+                            composable("settings") {
+                                SettingsScreen(
                                     onNavigateBack = {
                                         navController.popBackStack()
                                     }

@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -20,7 +21,7 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: MainViewModel, onNavigateHistory: () -> Unit, onNavigateTodo: () -> Unit) {
+fun HomeScreen(viewModel: MainViewModel, onNavigateHistory: () -> Unit, onNavigateTodo: () -> Unit, onNavigateSettings: () -> Unit) {
     val allTasks by viewModel.tasks.collectAsState()
     val tasks = remember(allTasks) { allTasks.filter { com.example.DateUtils.isToday(it.timestamp) } }
     
@@ -40,6 +41,9 @@ fun HomeScreen(viewModel: MainViewModel, onNavigateHistory: () -> Unit, onNaviga
                     }
                     IconButton(onClick = onNavigateHistory) {
                         Icon(Icons.Default.History, contentDescription = "History")
+                    }
+                    IconButton(onClick = onNavigateSettings) {
+                        Icon(Icons.Default.Settings, contentDescription = "Settings")
                     }
                 }
             )
