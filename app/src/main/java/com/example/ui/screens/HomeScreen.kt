@@ -1,6 +1,8 @@
 package com.example.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -38,14 +40,25 @@ fun HomeScreen(viewModel: MainViewModel, onNavigateHistory: () -> Unit, onNaviga
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 ),
                 actions = {
-                    IconButton(onClick = onNavigateTodo) {
-                        Icon(Icons.Default.Checklist, contentDescription = "Todo List")
-                    }
-                    IconButton(onClick = onNavigateHistory) {
-                        Icon(Icons.Default.History, contentDescription = "History")
-                    }
-                    IconButton(onClick = onNavigateSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = "Settings")
+                    Row(
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.1f),
+                                shape = CircleShape
+                            )
+                            .padding(horizontal = 2.dp),
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = onNavigateTodo) {
+                            Icon(Icons.Default.Checklist, contentDescription = "Todo List")
+                        }
+                        IconButton(onClick = onNavigateHistory) {
+                            Icon(Icons.Default.History, contentDescription = "History")
+                        }
+                        IconButton(onClick = onNavigateSettings) {
+                            Icon(Icons.Default.Settings, contentDescription = "Settings")
+                        }
                     }
                 }
             )
