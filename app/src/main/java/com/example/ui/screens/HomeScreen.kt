@@ -29,9 +29,11 @@ fun HomeScreen(viewModel: MainViewModel, onNavigateHistory: () -> Unit, onNaviga
     var taskToEdit by remember { mutableStateOf<TaskItem?>(null) }
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             TopAppBar(
                 title = { Text("What I Did Today") },
+                windowInsets = WindowInsets(0.dp),
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 ),

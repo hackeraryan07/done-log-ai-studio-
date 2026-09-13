@@ -27,9 +27,11 @@ fun SettingsScreen(onNavigateBack: () -> Unit) {
     val themeMode by AppSettings.getThemeMode(context).collectAsStateWithLifecycle(initialValue = ThemeMode.SYSTEM)
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             TopAppBar(
                 title = { Text("Settings") },
+                windowInsets = WindowInsets(0.dp),
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")

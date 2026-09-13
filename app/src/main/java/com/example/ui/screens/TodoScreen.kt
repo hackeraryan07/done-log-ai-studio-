@@ -53,9 +53,11 @@ fun TodoScreen(viewModel: MainViewModel, onNavigateBack: () -> Unit) {
     val tabs = listOf("Today", "Pending", "Future")
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             TopAppBar(
                 title = { Text("To-Do List") },
+                windowInsets = WindowInsets(0.dp),
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")

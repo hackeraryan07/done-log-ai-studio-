@@ -53,9 +53,11 @@ fun HistoryScreen(viewModel: MainViewModel, onNavigateBack: () -> Unit) {
     var taskToEdit by remember { mutableStateOf<TaskItem?>(null) }
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             TopAppBar(
                 title = { Text("History") },
+                windowInsets = WindowInsets(0.dp),
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
