@@ -18,9 +18,12 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.Firebase
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.OAuthProvider
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.credentials.exceptions.NoCredentialException
 
 @Composable
 fun AuthScreen(onAuthSuccess: () -> Unit) {
@@ -91,8 +94,28 @@ suspend fun doGoogleSignIn(context: Context): Boolean {
         .addCredentialOption(googleIdOption)
         .build()
 
-    val result = credentialManager.getCredential(context, request)
-    return handleSignIn(result)
+    try {
+        val result = credentialManager.getCredential(context, request)
+        return handleSignIn(result)
+    } catch (e: GetCredentialCancellationException) {
+        return false
+    } catch (e: NoCredentialException) {
+        return fallbackWebSignIn(context)
+    }
+}
+
+suspend fun fallbackWebSignIn(context: Context): Boolean {
+    val activity = context as? android.app.Activity ?: return false
+    val provider = OAuthProvider.newBuilder("google.com").build()
+    
+    val pendingResultTask = Firebase.auth.pendingAuthResult
+    if (pendingResultTask != null) {
+        pendingResultTask.await()
+        return true
+    }
+    
+    Firebase.auth.startActivityForSignInWithProvider(activity, provider).await()
+    return true
 }
 
 private suspend fun handleSignIn(result: GetCredentialResponse): Boolean {
